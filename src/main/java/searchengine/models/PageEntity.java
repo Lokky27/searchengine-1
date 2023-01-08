@@ -5,14 +5,17 @@ import javax.persistence.*;
 @Entity
 @Table(name = "page",
         indexes = @Index(columnList = "path", unique = true))
-public class Page {
+public class PageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "site_id", insertable = false, updatable = false, nullable = false)
-    private Site site;
+    @JoinColumn(name = "site_id",
+                insertable = false,
+                updatable = false,
+                nullable = false)
+    private SiteEntity site;
 
     @Column(name = "path",
             columnDefinition = "TEXT",

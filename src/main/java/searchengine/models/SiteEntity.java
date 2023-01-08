@@ -3,13 +3,15 @@ package searchengine.models;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "site")
 @Data
-public class Site
+public class SiteEntity
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +26,7 @@ public class Site
     @Column(name = "status_time",
             columnDefinition = "DATETIME",
             nullable = false)
-    private Date statusTime;
+    private LocalDateTime statusTime;
 
     @Column(name = "last_error", columnDefinition = "TEXT")
     private String lastError;
@@ -38,8 +40,4 @@ public class Site
             columnDefinition = "VARCHAR(255)",
             nullable = false)
     private String name;
-
-    @OneToMany(mappedBy = "site")
-    private List<Page> pages;
-
 }
