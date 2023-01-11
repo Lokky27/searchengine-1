@@ -1,24 +1,94 @@
 package searchengine.services;
 
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import searchengine.config.Site;
+import searchengine.config.SitesList;
+import searchengine.models.PageEntity;
 import searchengine.models.SiteEntity;
+import searchengine.models.Status;
+import searchengine.repos.PageRepository;
+import searchengine.repos.SiteRepository;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+@Service
 public class SiteServiceImpl implements SiteService {
+
+    private final SiteRepository siteRepository;
+    private final PageRepository pageRepository;
+    private final SitesList sitesList;
+
+    @Autowired
+    public SiteServiceImpl(SiteRepository siteRepository, PageRepository pageRepository, SitesList sitesList) {
+        this.siteRepository = siteRepository;
+        this.pageRepository = pageRepository;
+        this.sitesList = sitesList;
+    }
+    @Override
+    public Optional<SiteEntity> findSiteById(Integer siteId) {
+        return siteRepository.findById(siteId);
+    }
+
     @Override
     public void startIndexing() {
-
+        for (Site site : sitesList.getSites()) {
+            parseSite(site);
+        }
     }
 
     @Override
     public void addSite(SiteEntity site) {
-
+        siteRepository.save(site);
     }
 
     @Override
     public void deleteSiteById(Integer siteId) {
-
+        siteRepository.deleteById(siteId);
     }
 
-    private void parseSite() {
+    private void parseSite(Site siteFromProperties) {
+
+        Connection connection;
+        SiteEntity site = new SiteEntity();
+        try {
+            connection = Jsoup
+                    .connect(siteFromProperties.getUrl())
+                    .maxBodySize(0)
+                    .userAgent("Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6")
+                    .referrer("https://www.google.com");
+            Document document = connection.get();
+            site.setUrl(siteFromProperties.getUrl());
+            site.setName(siteFromProperties.getName());
+            site.setStatus(Status.INDEXING);
+            site.setStatusTime(LocalDateTime.now());
+            siteRepository.save(site);
+            Elements links = document.select("a[href~=^" + siteFromProperties.getUrl() + "|^/[a-z]]");
+            for (Element link : links) {
+                String cutUrl = link.attributes().get("href");
+                String fullUrl = cutUrl.matches("^" +
+                        siteFromProperties.getUrl() + ".*") ? cutUrl : siteFromProperties.getUrl() + cutUrl;
+                fullUrl += fullUrl.matches(".+/$") ? "" : "/";
+                Connection pageConnection = Jsoup.connect(fullUrl);
+                PageEntity page = new PageEntity();
+                page.setSite(site);
+                page.setPath(fullUrl);
+                page.setStatusCode(pageConnection.execute().statusCode());
+                page.setContent(pageConnection.get().html());
+                pageRepository.save(page);
+            }
+        }
+        catch (IOException exception) {
+            exception.printStackTrace();
+            site.setLastError(exception.getMessage());
+        }
 
     }
 }

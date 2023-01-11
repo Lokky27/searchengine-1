@@ -1,19 +1,22 @@
 package searchengine.models;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+import lombok.Data;
+
 
 @Entity
 @Table(name = "page",
         indexes = @Index(columnList = "path", unique = true))
+@Data
 public class PageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL,
+               optional = true,
+               fetch = FetchType.EAGER)
     @JoinColumn(name = "site_id",
-                insertable = false,
-                updatable = false,
                 nullable = false)
     private SiteEntity site;
 

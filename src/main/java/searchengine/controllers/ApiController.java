@@ -1,12 +1,12 @@
 package searchengine.controllers;
 
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import searchengine.dto.statistics.StatisticsResponse;
+import searchengine.services.SiteService;
 import searchengine.services.StatisticsService;
 
 import java.util.HashMap;
@@ -16,9 +16,12 @@ import java.util.HashMap;
 public class ApiController {
 
     private final StatisticsService statisticsService;
+    private final SiteService siteService;
 
-    public ApiController(StatisticsService statisticsService) {
+    @Autowired
+    public ApiController(StatisticsService statisticsService, SiteService siteService) {
         this.statisticsService = statisticsService;
+        this.siteService = siteService;
     }
 
     @GetMapping("/statistics")
@@ -29,6 +32,7 @@ public class ApiController {
     @GetMapping("/indexing")
     public HashMap<String, Boolean> startIndexing()
     {
+        siteService.startIndexing();
         HashMap<String, Boolean> response = new HashMap<>();
         response.put("result", true);
         return response;
