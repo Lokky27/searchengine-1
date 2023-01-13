@@ -13,4 +13,5 @@ public interface SiteService {
     void addSite(SiteEntity site);
 
     void deleteSiteById(Integer siteId);
+
 }

@@ -32,9 +32,12 @@ public class ApiController {
     @GetMapping("/indexing")
     public HashMap<String, Boolean> startIndexing()
     {
+        long start = System.currentTimeMillis();
         siteService.startIndexing();
         HashMap<String, Boolean> response = new HashMap<>();
         response.put("result", true);
+        System.out.println("It's done! Finally!");
+        System.out.println("It takes: " + (System.currentTimeMillis() - start) / 1000 + " seconds");
         return response;
     }
 }

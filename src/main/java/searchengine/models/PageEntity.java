@@ -10,10 +10,10 @@ import lombok.Data;
 @Data
 public class PageEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @ManyToOne(cascade = CascadeType.ALL,
+    @ManyToOne(cascade = CascadeType.MERGE,
                optional = true,
                fetch = FetchType.EAGER)
     @JoinColumn(name = "site_id",

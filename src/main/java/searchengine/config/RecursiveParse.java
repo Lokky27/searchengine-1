@@ -1,57 +1,41 @@
-package searchengine.services;
+package searchengine.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import searchengine.config.RecursiveParse;
-import searchengine.config.SitesList;
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.springframework.stereotype.Component;
+import searchengine.models.PageEntity;
 import searchengine.models.SiteEntity;
+import searchengine.models.Status;
 import searchengine.repos.PageRepository;
 import searchengine.repos.SiteRepository;
 
-import java.util.Optional;
-import java.util.concurrent.ForkJoinPool;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.concurrent.RecursiveAction;
 
-@Service
-public class SiteServiceImpl implements SiteService {
-
+@Component
+public class RecursiveParse extends RecursiveAction {
+    private final SitesList sitesList;
     private final SiteRepository siteRepository;
     private final PageRepository pageRepository;
-    private final SitesList sitesList;
-    private final RecursiveParse recursiveParse;
 
-    @Autowired
-    public SiteServiceImpl(SiteRepository siteRepository,
-                           PageRepository pageRepository,
-                           SitesList sitesList,
-                           RecursiveParse recursiveParse) {
+    public RecursiveParse(SitesList sitesList, SiteRepository siteRepository, PageRepository pageRepository) {
+        this.sitesList = sitesList;
         this.siteRepository = siteRepository;
         this.pageRepository = pageRepository;
-        this.sitesList = sitesList;
-        this.recursiveParse = recursiveParse;
-    }
-    @Override
-    public Optional<SiteEntity> findSiteById(Integer siteId) {
-        return siteRepository.findById(siteId);
     }
 
     @Override
-    public void startIndexing() {
-        for (int i = 0; i < sitesList.getSites().size(); i++) {
-            ForkJoinPool.commonPool().invoke(recursiveParse);
+    protected void compute() {
+        for (Site site : sitesList.getSites()) {
+            parseSite(site);
         }
+
     }
 
-    @Override
-    public void addSite(SiteEntity site) {
-        siteRepository.save(site);
-    }
-
-    @Override
-    public void deleteSiteById(Integer siteId) {
-        siteRepository.deleteById(siteId);
-    }
-
-    /*
     public void parseSite(Site siteFromProperties) {
 
         Connection connection;
@@ -77,16 +61,14 @@ public class SiteServiceImpl implements SiteService {
                 Connection pageConnection = Jsoup.connect(fullUrl);
                 PageEntity page = new PageEntity();
                 page.setSite(site);
-                page.setPath(fullUrl);
+                page.setPath(cutUrl);
                 page.setStatusCode(pageConnection.execute().statusCode());
                 page.setContent(pageConnection.get().html());
                 pageRepository.save(page);
             }
-        }
-        catch (IOException exception) {
+        } catch (IOException exception) {
             exception.printStackTrace();
             site.setLastError(exception.getMessage());
         }
-     }
-     */
+    }
 }
