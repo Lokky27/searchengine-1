@@ -1,18 +1,19 @@
 package searchengine.models;
 
+import jakarta.persistence.*;
 import lombok.Data;
 
-import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "site")
 @Data
-public class Site
+public class SiteEntity
 {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     @Column(name = "status",
@@ -38,8 +39,5 @@ public class Site
             columnDefinition = "VARCHAR(255)",
             nullable = false)
     private String name;
-
-    @OneToMany(mappedBy = "site")
-    private List<Page> pages;
 
 }
