@@ -3,20 +3,21 @@ package searchengine.models;
 import jakarta.persistence.*;
 import lombok.Data;
 
-@Data
+
 @Entity
 @Table(name = "page",
         indexes = @Index(columnList = "path", unique = true))
-public class Page {
+@Data
+public class PageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE,
+               optional = true,
+               fetch = FetchType.EAGER)
     @JoinColumn(name = "site_id",
-            insertable = false,
-            updatable = false,
-            nullable = false)
+                nullable = false)
     private SiteEntity site;
 
     @Column(name = "path",

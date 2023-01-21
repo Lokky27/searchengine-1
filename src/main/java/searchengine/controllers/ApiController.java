@@ -5,26 +5,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import searchengine.config.Site;
-import searchengine.config.SitesList;
 import searchengine.dto.statistics.StatisticsResponse;
-import searchengine.services.SiteIndexingService;
+import searchengine.services.SiteService;
 import searchengine.services.StatisticsService;
 
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
 public class ApiController {
 
     private final StatisticsService statisticsService;
-    private final SiteIndexingService siteIndexingService;
+    private final SiteService siteService;
+
     @Autowired
-    public ApiController(StatisticsService statisticsService, SiteIndexingService siteIndexingService) {
+    public ApiController(StatisticsService statisticsService, SiteService siteService) {
         this.statisticsService = statisticsService;
-        this.siteIndexingService = siteIndexingService;
+        this.siteService = siteService;
     }
 
     @GetMapping("/statistics")
@@ -33,10 +30,14 @@ public class ApiController {
     }
 
     @GetMapping("/indexing")
-    public HashMap<String, Boolean> startIndexing() throws IOException {
+    public HashMap<String, Boolean> startIndexing()
+    {
+        long start = System.currentTimeMillis();
+        siteService.startIndexing();
         HashMap<String, Boolean> response = new HashMap<>();
-        siteIndexingService.startIndexing();
         response.put("result", true);
+        System.out.println("It's done! Finally!");
+        System.out.println("It takes: " + (System.currentTimeMillis() - start) / 1000 + " seconds");
         return response;
     }
 }

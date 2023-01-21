@@ -3,9 +3,8 @@ package searchengine.models;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDateTime;
+
 
 @Entity
 @Table(name = "site")
@@ -25,7 +24,7 @@ public class SiteEntity
     @Column(name = "status_time",
             columnDefinition = "DATETIME",
             nullable = false)
-    private Date statusTime;
+    private LocalDateTime statusTime;
 
     @Column(name = "last_error", columnDefinition = "TEXT")
     private String lastError;
@@ -39,5 +38,4 @@ public class SiteEntity
             columnDefinition = "VARCHAR(255)",
             nullable = false)
     private String name;
-
 }
