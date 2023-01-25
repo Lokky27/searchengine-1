@@ -14,7 +14,6 @@ public class PageEntity {
     private Integer id;
 
     @ManyToOne(cascade = CascadeType.MERGE,
-               optional = true,
                fetch = FetchType.EAGER)
     @JoinColumn(name = "site_id",
                 nullable = false)

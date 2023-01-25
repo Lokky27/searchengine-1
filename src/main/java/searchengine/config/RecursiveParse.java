@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 import searchengine.models.PageEntity;
 import searchengine.models.SiteEntity;
 import searchengine.models.Status;
-import searchengine.repos.PageRepository;
-import searchengine.repos.SiteRepository;
+import searchengine.repositories.PageRepository;
+import searchengine.repositories.SiteRepository;
 
 import java.io.IOException;
 import java.time.LocalDateTime;

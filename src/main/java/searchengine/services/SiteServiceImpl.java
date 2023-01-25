@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import searchengine.config.RecursiveParse;
 import searchengine.config.SitesList;
 import searchengine.models.SiteEntity;
-import searchengine.repos.PageRepository;
-import searchengine.repos.SiteRepository;
+import searchengine.repositories.PageRepository;
+import searchengine.repositories.SiteRepository;
 
 import java.util.Optional;
 import java.util.concurrent.ForkJoinPool;
